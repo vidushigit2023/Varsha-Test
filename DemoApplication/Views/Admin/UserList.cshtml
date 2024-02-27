@@ -1,0 +1,109 @@
+﻿@using DemoApplication.Models.Domain
+@{
+    Layout = "_Layout";
+}
+
+<link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+<link type="text/css" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.css" />
+
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.0.0/js/dataTables.bootstrap5.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        new DataTable('#tblList');
+    });
+</script>
+
+<h2>User List</h2>
+<table id="tblList" class="table table-striped" style="width:100%">
+    <thead>
+        <tr>
+
+            <th>UserName</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>View</th>
+            @*this button only accessible to admin*@
+            @if (User.IsInRole("admin"))
+            {
+                <th>Delete</th>
+            }
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Userlist)
+        {
+            var useurl = "https://localhost:7250/Dashboard/Profile?userId=" + @item.Id;
+            <tr>
+
+                <td>@item.UserName</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td><a id="View" href="@useurl" class="btn btn-sm btn-info">View</a> </td>
+                @*this button only accessible to admin*@
+                @if (User.IsInRole("admin"))
+                {
+                    <td>
+                    <a onclick='Delete("@item.Id")' class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+<script type="text/javascript">
+    function view(id) {
+        $.ajax({
+            type: 'Get',
+            contentType: "application/json; charset=utf-8",
+
+            async: false,
+            url: 'https://localhost:7250/Dashboard/Profile?userId=' + id,
+
+            success: function (response) {
+
+            },
+            error: function () { alert('there is some error'); }
+        });
+    }
+
+    function Delete(id) {
+        var answer = confirm('Are you sure you want to delete?');
+        if (answer) {
+            $.ajax({
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+
+                async: false,
+                url: './Delete?Id=' + id,
+
+                success: function (response) {
+
+                    if (response.statusCode == 1) {
+
+                        alert(response.message);
+                        window.location = window.location.href;
+
+                    }
+                    else {
+
+                        alert(response.message);
+                    }
+
+                },
+                error: function () { alert('there is some error'); }
+            });
+
+
+        }
+    }
+</script>

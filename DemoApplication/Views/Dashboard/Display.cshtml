@@ -1,0 +1,8 @@
+﻿@{
+    string Username = User.Identity.Name;
+}
+Welcome To @Username
+@if (TempData["msg"] != null)
+{
+    <p><label>@TempData["msg"]</label></p>
+}

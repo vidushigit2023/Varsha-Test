@@ -1,0 +1,55 @@
+﻿@model DemoApplication.Models.ViewModels.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+
+
+</head>
+<body>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    @* <link href="/css/bootstrap.min.css" rel="stylesheet" /> *@
+    <form asp-action="UserLogin" method="post">
+
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <label asp-for="Username" class="form-label"><b>Username</b></label>
+                    <input type="text" asp-for="Username" class="form-control" placeholder="Enter Username">
+                    <div class="msg">
+                        <span class="err form-label" asp-validation-for="Username"></span>
+                    </div>
+
+
+
+                    <label asp-for="Password" class="form-label mt-3"><b>Password</b></label>
+                    <input type="password" asp-for="Password" class="form-control" placeholder="Enter Password">
+                    <div class="msg">
+                        <span asp-validation-for="Password" class="err form-label"></span>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-success mt-3">Login</button>
+                    <p>
+                        <a class="text-alert" href="~/UserLogin/Registration">Not a user? Signup</a>
+                        <br />
+                        <a class="text-alert" href="~/UserLogin/ForgotPassword">Forgot password?</a>
+                    </p>
+                    @if (TempData["msg"] != null)
+                    {
+                        <h2><div class="msg">@TempData["msg"]</div></h2>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+
+</body>
+</html>

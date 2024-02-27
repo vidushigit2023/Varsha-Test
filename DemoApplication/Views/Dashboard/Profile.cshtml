@@ -1,0 +1,226 @@
+﻿@model DemoApplication.Models.ViewModels.UserModel;
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #selectedImageContainer {
+        width: 100px;
+        height: 100px;
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<form asp-action="Profile" method="post" class="row g-3" enctype="multipart/form-data">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <h2>Profile</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name:</label>
+                    <input type="text" asp-for="FirstName" class="form-control" id="firstName" placeholder="Enter first name">
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name:</label>
+                    <input type="text" asp-for="LastName" class="form-control" id="lastName" placeholder="Enter last name">
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="userName" class="form-label">Username:</label>
+                    <input type="text" asp-for="UserName" class="form-control" id="userName" readonly="readonly">
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">Phone Number:</label>
+                    <input type="text" asp-for="PhoneNumber" class="form-control" id="phoneNumber" placeholder="Enter phone number">
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+
+       
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3 custom-file">
+                    <label for="profilePicture" class="form-label">Profile Picture:</label>
+                    <input type="file" asp-for="ProfilePicture" class="custom-file-input" id="profilePicture" accept="image/*" onchange="displaySelectedImage(event)" />
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="docFile" class="form-label">Document File:</label>
+                    <input type="file" asp-for="DocFile" class="custom-file-input" id="DocFile" onchange="displaySelectedDoc(event)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                 @if (Model.ProfilePicture!=null)
+                {
+                    <button type="submit" id="btnDeleteProfilePic" onclick='DeletePic()' class="btn btn-danger">Delete Profile Pic</button>
+                }
+            </div>
+            <div class="col-md-6">
+                @if (Model.DocFile!=null)
+                {
+                    <button type="submit" id="btnDeleteDoc" onclick='DeleteDoc()' class="btn btn-danger">Delete Doc</button>
+                }
+            </div>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="Address" class="form-label">Address:</label>
+            <input type="text" asp-for="Address" class="form-control" id="userName">
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="col-md-6">
+
+        <div class="mb-3" id="selectedImageContainer">
+            @if (Model.ProfilePicture != null)
+            {
+                <img src="~/ProfileImage/@Url.Content(Model.ProfilePicture)" class="img-thumbnail" alt="Profile Picture">
+            }
+
+        </div>
+
+        <div class="mb-3" id="selectedDocContainer">
+            @if (Model.DocFile != null)
+            {
+                <label><a href="~/DocFiles/@Url.Content(Model.DocFile)">@Model.DocFile</a></label>
+            }
+
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">Update User</button>
+    </div>
+ @*    @if (ViewData["msg"] != null)
+    {
+        <label>ViewData["msg"]</label>
+    }
+    else
+    {
+        <label></label>
+    } *@
+</form>
+<script>
+    function displaySelectedImage(event) {
+        var selectedFile = event.target.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+            var imageUrl = event.target.result;
+            var imgElement = document.createElement("img");
+            imgElement.setAttribute("src", imageUrl);
+            imgElement.setAttribute("class", "img-thumbnail");
+            imgElement.setAttribute("alt", "Selected Image");
+
+            var imgContainer = document.getElementById("selectedImageContainer");
+            imgContainer.innerHTML = ""; // Clear previous content
+            imgContainer.appendChild(imgElement);
+        };
+
+        reader.readAsDataURL(selectedFile);
+    }
+
+    function displaySelectedDoc(event) {
+        var selectedFile = event.target.files[0];
+        debugger;
+        var reader = new FileReader();
+
+        reader.onload = function (event) {
+            var imageUrl = event.target.result;
+            var imgElement = document.createElement("label");
+            imgElement.setAttribute("value", imageUrl);
+
+            var imgContainer = document.getElementById("selectedDocContainer");
+            imgContainer.innerHTML = ""; // Clear previous content
+            imgContainer.appendChild(imgElement);
+        };
+
+        reader.readAsDataURL(selectedFile);
+    }
+
+
+    function DeletePic() {
+        var answer = confirm('Are you sure you want to delete?');
+        if (answer) {
+            $.ajax({
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+
+                async: false,
+                url: './DeletePic?',
+
+                success: function (response) {
+
+                    if (response.statusCode == 1) {
+
+                        alert(response.message);
+                        window.location = window.location.href;
+
+                    }
+                    else {
+
+                        alert(response.message);
+                    }
+
+                },
+                error: function () { alert('there is some error'); }
+            });
+        }
+    }
+
+    function DeleteDoc(){
+        var answer = confirm('Are you sure you want to delete?');
+        if (answer) {
+            $.ajax({
+                type: 'Post',
+                contentType: "application/json; charset=utf-8",
+
+                async: false,
+                url: './DeleteDoc',
+
+                success: function (response) {
+
+                    if (response.statusCode == 1) {
+
+                        alert(response.message);
+                        window.location = window.location.href;
+
+                    }
+                    else {
+
+                        alert(response.message);
+                    }
+
+                },
+                error: function () { alert('there is some error'); }
+            });
+        }
+    }
+
+
+</script>
+
+
+
